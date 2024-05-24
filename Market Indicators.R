@@ -63,13 +63,6 @@ train_index <- createDataPartition(data$RSI_returns, p = 0.8, list = FALSE)
 train_subset <- data[train_index, ]
 test_subset <- data[-train_index, ]
 
-#Exploratory Data Analysis
-pairs.panels(train_subset[,-5],
-             gap = 0,
-             bg = c("red", "yellow", "blue")[training$Species],
-             pch=21)
-
-
 # Train linear regression model
 model <- lm(RSI_returns ~ AAPL.Open + SMA20 + RSI + MACD + ATR + macd + tr , data = train_subset)
 summary(model)
@@ -106,10 +99,11 @@ baseline_mae <- MAE(baseline_predictions, test_subset$RSI_returns)
 cat("Baseline MAE:", baseline_mae, "\n")
 
 #Visualize
+test_data_pred<-cbind(predictions, test_subset)
+test_data_pred<-na.omit(test_data_pred)
 ggplot(data = test_data_pred, aes(x = 1:nrow(test_data_pred))) +
-  geom_line(aes(y = RSI_returns, color = "Actual")) +
   geom_line(aes(y = predictions, color = "Predicted")) +
+  geom_line(aes(y = RSI_returns, color = "Actual")) +
   labs(title = "Actual vs Predicted RSI Return for AAPL") +
   scale_color_manual(values = c("Actual" = "blue", "Predicted" = "red")) +
   theme_minimal()
-
